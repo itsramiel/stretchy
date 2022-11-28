@@ -1,4 +1,4 @@
-import { Image, ImageSourcePropType, Platform, ScrollView, ScrollViewProps, View } from "react-native";
+import { ImageSourcePropType, Platform, ScrollViewProps, View } from "react-native";
 import Animated, {
   useSharedValue,
   useAnimatedScrollHandler,
@@ -12,7 +12,6 @@ interface StretchyScrollViewProps extends ScrollViewProps {
   imageHeight: number;
 }
 export const StretchyScrollView = ({ imageSource, imageHeight, ...props }: StretchyScrollViewProps) => {
-  const inset = Platform.OS === "ios" ? imageHeight : 0;
   const scrollOffset = useSharedValue(0);
 
   const scrollHandler = useAnimatedScrollHandler((e) => {
@@ -20,36 +19,32 @@ export const StretchyScrollView = ({ imageSource, imageHeight, ...props }: Stret
   });
 
   const rView = useAnimatedStyle(() => {
-    const noramlizedOffset = scrollOffset.value + (Platform.OS === "ios" ? inset : 0);
     return {
-      transform: [{ translateY: -interpolate(noramlizedOffset, [0, imageHeight], [0, imageHeight], Extrapolate.CLAMP) }],
-      height: imageHeight + (noramlizedOffset < 0 ? Math.abs(noramlizedOffset) : 0),
+      transform: [{ translateY: -interpolate(scrollOffset.value, [0, imageHeight], [0, imageHeight], Extrapolate.CLAMP) }],
+      height: imageHeight + (scrollOffset.value < 0 ? Math.abs(scrollOffset.value) : 0),
     };
-  }, [inset, scrollOffset, imageHeight]);
+  }, [scrollOffset, imageHeight]);
 
   const rImage = useAnimatedStyle(() => {
-    const noramlizedOffset = scrollOffset.value + (Platform.OS === "ios" ? inset : 0);
     return {
-      height: imageHeight + (noramlizedOffset < 0 ? Math.abs(noramlizedOffset) : 0),
+      height: "100%",
       width: "100%",
-      transform: [{ scale: interpolate(noramlizedOffset, [-imageHeight, 0, imageHeight], [2, 1, 1]) }],
+      transform: [{ scale: interpolate(scrollOffset.value, [-imageHeight, 0, imageHeight], [1.5, 1, 1], Extrapolate.CLAMP) }],
     };
-  }, [imageHeight, scrollOffset, inset]);
+  }, [imageHeight, scrollOffset]);
 
   return (
     <View style={{ flex: 1 }}>
       <Animated.ScrollView
         {...props}
-        contentInset={{ top: imageHeight }}
         contentOffset={{ x: 0, y: -imageHeight }}
-        contentContainerStyle={Platform.select({
-          android: { paddingTop: imageHeight },
-        })}
+        contentContainerStyle={{ paddingTop: imageHeight }}
         scrollEventThrottle={16}
         onScroll={scrollHandler}
       />
       <Animated.View
         style={[{ position: "absolute", top: 0, width: "100%", overflow: "hidden" }, { height: imageHeight }, rView]}
+        pointerEvents="none"
       >
         <Animated.Image source={imageSource} style={rImage} />
       </Animated.View>
