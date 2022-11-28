@@ -10,6 +10,11 @@ export default function App() {
       <StretchyScrollView
         imageSource={require("./assets/doggo.jpg")}
         imageHeight={200}
+        foreground={
+          <View style={{ flex: 1, alignItems: "center", justifyContent: "flex-end", marginBottom: 10 }}>
+            <Text>rami is the best</Text>
+          </View>
+        }
       >
         <Content />
       </StretchyScrollView>

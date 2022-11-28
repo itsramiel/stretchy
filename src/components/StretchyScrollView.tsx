@@ -10,8 +10,9 @@ import Animated, {
 interface StretchyScrollViewProps extends ScrollViewProps {
   imageSource: ImageSourcePropType;
   imageHeight: number;
+  foreground: React.ReactNode;
 }
-export const StretchyScrollView = ({ imageSource, imageHeight, ...props }: StretchyScrollViewProps) => {
+export const StretchyScrollView = ({ imageSource, imageHeight, foreground, ...props }: StretchyScrollViewProps) => {
   const scrollOffset = useSharedValue(0);
 
   const scrollHandler = useAnimatedScrollHandler((e) => {
@@ -27,9 +28,10 @@ export const StretchyScrollView = ({ imageSource, imageHeight, ...props }: Stret
 
   const rImage = useAnimatedStyle(() => {
     return {
-      height: "100%",
-      width: "100%",
       transform: [{ scale: interpolate(scrollOffset.value, [-imageHeight, 0, imageHeight], [1.5, 1, 1], Extrapolate.CLAMP) }],
+      position: "absolute",
+      width: "100%",
+      height: "100%",
     };
   }, [imageHeight, scrollOffset]);
 
@@ -47,6 +49,7 @@ export const StretchyScrollView = ({ imageSource, imageHeight, ...props }: Stret
         pointerEvents="none"
       >
         <Animated.Image source={imageSource} style={rImage} />
+        {foreground}
       </Animated.View>
     </View>
   );
