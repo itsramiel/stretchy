@@ -1,13 +1,17 @@
 import { StatusBar } from "expo-status-bar";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { Content } from "./src/components/Content";
+import { Item } from "./src/components/Item";
+import { StretchyFlatList } from "./src/components/StretchyFlatlist";
 import { StretchyScrollView } from "./src/components/StretchyScrollView";
 
 export default function App() {
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
-      <StretchyScrollView
+      <StretchyFlatList
+        data={Array(20).fill(0)}
+        renderItem={Item}
         imageSource={require("./assets/doggo.jpg")}
         imageHeight={200}
         foreground={
@@ -17,7 +21,7 @@ export default function App() {
         }
       >
         <Content />
-      </StretchyScrollView>
+      </StretchyFlatList>
     </View>
   );
 }
